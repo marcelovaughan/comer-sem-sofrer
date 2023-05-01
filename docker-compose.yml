@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:5.7.36
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: calorias
+      MYSQL_USER: calorias
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - calorias-network
+  web:
+    restart: always
+    tty: true
+    build: .
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_DATABASE=calorias
+      - MYSQL_USER=calorias
+      - MYSQL_PASSWORD=1234
+      - MYSQL_URL=db
+    depends_on:
+      - db
+    networks:
+      - calorias-network
+volumes:
+  mysql-data:
+networks:
+  calorias-network:
+    driver: "bridge"
